@@ -1,0 +1,19 @@
+{
+    "name": "htserviceclient",
+    "addressable": {
+        "name": "htserviceaddress",
+        "protocol": "HTTP",
+        "method":"POST",
+        "address": "htservice",
+        "port": 9000,
+        "path":"/receiveDataPost"
+    },
+    "filter":{
+        "deviceIdentifiers":[
+                "chinadayht"
+                ]
+    },
+    "format": "JSON",
+    "enable": true,
+    "destination": "REST_ENDPOINT"
+}
