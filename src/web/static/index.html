@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EdgeX Foundry China Day 2019 temperature and humidity monitor</title>
+    <script type="text/javascript" src="/static/js/Chart.min.js"></script>
+</head>
+<body>
+<div>
+    <canvas id="chart"></canvas>
+</div>
+
+<script type="text/javascript">
+    var now = new Date();
+    var nowStr = (now.getHours()) + ":" +(now.getMinutes()) + ":" +(now.getSeconds());
+    var dataLabels = [];
+    var dataT = [];
+    var dataH = [];
+    for(var i=0;i<40;i++){
+        dataLabels.push(nowStr);
+        dataT.push('');
+        dataH.push('');
+    }
+    var timeFormat = 'MM/DD/YYYY HH:mm';
+    var config = {
+        type: 'line',
+        data: {
+            labels: dataLabels,
+            datasets: [
+                {
+                    label: 'temperature',
+                    data: dataT,
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    fill: false,
+                    yAxesID: 'left-y-axis'
+                },
+                {
+                    label: 'humidity',
+                    data: dataH,
+                    backgroundColor: 'rgb(75, 192, 192)',
+                    borderColor: 'rgb(75, 192, 192)',
+                    fill: false,
+                    yAxesID:'right-y-axis'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: 'EdgeX Foundry China Day 2019 temperature and humidity monitor'
+            },
+            scales: {
+                xAxes: [{
+                    gridLines: {
+                        color: "rgba(0, 0, 0, 0)",
+                    }
+                }],
+                yAxes:[
+                    {
+                        id: 'left-y-axis',
+                        type:'linear',
+                        position:'left',
+                        ticks:{
+                            suggestedMin:0,
+                            suggestedMax:100,
+                            callback: function(value, index, values){
+                                return value + '℃';
+                            }
+                        }
+                    },{
+                        id: 'right-y-axis',
+                        type:'linear',
+                        position:'right',
+                        ticks:{
+                            suggestedMin:0,
+                            suggestedMax:100,
+                            callback: function(value, index, values){
+                                return value + '%';
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    };
+
+    var ctx = document.getElementById('chart').getContext('2d');
+    var chart = new Chart(ctx, config);
+
+    setInterval(function() {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("GET", "/ajax",true);
+        xmlHttp.send();
+        xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                var data = xmlHttp.responseText;
+                var dataObj = JSON.parse(data);
+                if (config.data.datasets.length > 0) {
+                    var nowTime = new Date();
+                    var currentTimeStr = nowTime.getHours() + ":" + nowTime.getMinutes() + ":" + nowTime.getSeconds();
+                    dataLabels.push(currentTimeStr);
+                    dataT.push(dataObj["dataT"]);
+                    dataH.push(dataObj["dataH"]);
+
+                    dataLabels.shift();
+                    dataT.shift();
+                    dataH.shift();
+
+                    chart.update();
+                }
+            }
+        }
+
+    }, 5000);
+
+    function getRandomNum(min, max) {
+        var range = max - min;
+        var rand = Math.random();
+        return(min + Math.round(rand * range));
+    }
+
+</script>
+</body>
+</html>
