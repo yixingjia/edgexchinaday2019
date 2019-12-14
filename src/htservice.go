@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
 )
 
 var data = make(map[string]string)
@@ -53,8 +52,6 @@ func handlePostJson(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	con, _ := ioutil.ReadAll(r.Body)
 	json.Unmarshal(con, &result)
-	formatTimeStr:=time.Unix(time.Now().Unix(),0).Format("03:04:05")
-	data["time"] = formatTimeStr
 	for i := range result.Readings {
 		if result.Readings[i].Name == "temperature" {
 			data["dataT"] = result.Readings[i].Value
