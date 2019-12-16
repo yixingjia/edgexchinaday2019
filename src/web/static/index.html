@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>EdgeX Foundry Sensor real time data</title>
+    <title>EdgeX Foundry China Day 2019 temperature and humidity monitor</title>
     <script type="text/javascript" src="/static/js/Chart.min.js"></script>
 </head>
 <body>
@@ -10,12 +10,16 @@
 </div>
 
 <script type="text/javascript">
-    var d = new Date();
-    var now = (d.getHours()) + ":" +(d.getMinutes()) + ":" +(d.getSeconds());
-    var dataLabels = [now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now,now];
-    var dataT = ['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''];
-    var dataH = ['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''];
-    var timeFormat = 'MM/DD/YYYY HH:mm';
+    var now = new Date();
+    var nowStr = (now.getHours()) + ":" +(now.getMinutes()) + ":" +(now.getSeconds());
+    var dataLabels = [];
+    var dataT = [];
+    var dataH = [];
+    for(var i=0;i<40;i++){
+        dataLabels.push(nowStr);
+        dataT.push('');
+        dataH.push('');
+    }
     var config = {
         type: 'line',
         data: {
@@ -43,7 +47,7 @@
             responsive: true,
             title: {
                 display: true,
-                text: 'Real time data of temperature and humidity'
+                text: 'EdgeX Foundry China Day 2019 temperature and humidity monitor'
             },
             scales: {
                 xAxes: [{
@@ -54,23 +58,17 @@
                 yAxes:[
                     {
                         id: 'left-y-axis',
-                        gridLines: {
-                            color: "rgba(0, 0, 0, 0)",
-                        },
                         type:'linear',
                         position:'left',
                         ticks:{
                             suggestedMin:0,
-                            suggestedMax:50,
+                            suggestedMax:100,
                             callback: function(value, index, values){
                                 return value + '℃';
                             }
                         }
                     },{
                         id: 'right-y-axis',
-                        gridLines: {
-                            color: "rgba(0, 0, 0, 0)",
-                        },
                         type:'linear',
                         position:'right',
                         ticks:{
@@ -98,8 +96,9 @@
                 var data = xmlHttp.responseText;
                 var dataObj = JSON.parse(data);
                 if (config.data.datasets.length > 0) {
-
-                    dataLabels.push(dataObj["time"]);
+                    var nowTime = new Date();
+                    var currentTimeStr = nowTime.getHours() + ":" + nowTime.getMinutes() + ":" + nowTime.getSeconds();
+                    dataLabels.push(currentTimeStr);
                     dataT.push(dataObj["dataT"]);
                     dataH.push(dataObj["dataH"]);
 
@@ -112,13 +111,7 @@
             }
         }
 
-    }, 15000);
-
-    function getRandomNum(min, max) {
-        var range = max - min;
-        var rand = Math.random();
-        return(min + Math.round(rand * range));
-    }
+    }, 5000);
 
 </script>
 </body>
